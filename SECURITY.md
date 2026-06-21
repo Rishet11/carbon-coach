@@ -2,7 +2,7 @@
 
 ## Supported version
 
-This repository is a challenge submission and supports the current `main` branch.
+This repository is a challenge submission; the current `main` branch is the supported version.
 
 ## Reporting issues
 
@@ -10,7 +10,9 @@ Please open a GitHub issue for non-sensitive security concerns. Do not include s
 
 ## Security posture
 
-- The app does not require API keys or environment secrets.
-- The app does not create accounts or store profile data on a server.
-- `/api/analyze` validates input with zod and returns `Cache-Control: no-store`.
-- Security headers and Content-Security-Policy are configured in `next.config.ts` and `src/proxy.ts`.
+- CarbonCoach is a static, client-side site (Next.js `output: "export"`) deployed to GitHub Pages. There is no backend, so there is no server-side attack surface.
+- No API keys, environment secrets, or credentials exist anywhere in the repository.
+- No accounts, cookies, analytics, or third-party network calls. User input never leaves the browser.
+- The only persisted data is the list of adopted action IDs in `localStorage`; it is parsed defensively and never transmitted.
+- All profile input is validated with zod before it is used.
+- GitHub Pages serves the site over HTTPS, with HSTS applied on the `github.io` domain.

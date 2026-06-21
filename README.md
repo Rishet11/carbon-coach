@@ -4,6 +4,8 @@
 
 CarbonCoach is a personal carbon-footprint awareness platform for Prompt Wars Challenge 3. It helps individuals estimate, understand, track, and reduce their annual footprint through contextual recommendations.
 
+**Live app:** https://rishet11.github.io/carbon-coach/
+
 ## Chosen vertical
 
 Challenge 3: Carbon Footprint Awareness Platform.
@@ -32,7 +34,7 @@ Profile form
   -> dashboard + local action tracker
 ```
 
-No database is used. Adopted actions are stored in `localStorage` in the current browser only.
+The whole app is a static, client-side site (Next.js `output: "export"`) deployed to GitHub Pages. There is no backend and no database. The profile is validated with zod on submit; adopted actions are stored in `localStorage` in the current browser only.
 
 ## Assumptions
 
@@ -49,7 +51,6 @@ No database is used. Adopted actions are stored in `localStorage` in the current
 - [Our World in Data: food choices and carbon footprint](https://ourworldindata.org/food-choice-vs-eating-local)
 - [Oxfam: Carbon inequality in 2030](https://www.oxfam.org/en/research/carbon-inequality-2030)
 - Country grid-intensity assumptions are rounded from IEA/Ember-style public electricity data.
-- The deployed site is published from GitHub Pages at `https://rishet11.github.io/carbon-coach/`.
 
 ## Run locally
 
@@ -70,11 +71,12 @@ npm run build
 npm audit --omit=dev
 ```
 
-Current test suite: 21 tests covering the domain engine, API validation, component rendering, local tracking, and accessibility checks with `jest-axe`.
+The suite has 21 automated tests covering the domain engine, input validation, component rendering, local tracking, and accessibility checks with `jest-axe`. Behaviour-preserving refactors are guarded by characterization snapshots of the domain engine.
 
 ## Security and privacy
 
-- No accounts, cookies, analytics, external API calls, or server-side storage.
-- Request bodies are validated with zod.
-- Personal analysis responses use `Cache-Control: no-store`.
-- Security headers and a strict script Content-Security-Policy are configured in the app.
+- The app is a static client-side site with no backend, so there is no server to attack and no application secrets or API keys anywhere in the repository.
+- No accounts, cookies, analytics, or third-party network calls. Your inputs never leave the browser.
+- The only persisted data is the list of action IDs you mark as adopted, stored in `localStorage`; it is read back defensively and never transmitted.
+- All profile input is validated with zod before it is used.
+- GitHub Pages serves the site over HTTPS, with HSTS applied on the `github.io` domain.
