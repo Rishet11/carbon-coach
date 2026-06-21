@@ -5,14 +5,48 @@ import nextTs from "eslint-config-next/typescript";
 const eslintConfig = defineConfig([
   ...nextVitals,
   ...nextTs,
-  // Override default ignores of eslint-config-next.
   globalIgnores([
-    // Default ignores of eslint-config-next:
     ".next/**",
     "out/**",
     "build/**",
+    "coverage/**",
     "next-env.d.ts",
   ]),
+  {
+    // Quality guardrails enforced across all source code.
+    // Flat control flow + type-safe boundaries keep the "time-to-fix" low.
+    files: ["src/**/*.{ts,tsx}"],
+    rules: {
+      complexity: ["error", 8],
+      "max-depth": ["error", 3],
+      "max-params": ["error", 4],
+      "no-console": ["error", { allow: ["warn", "error"] }],
+      eqeqeq: ["error", "always"],
+      "no-var": "error",
+      "prefer-const": "error",
+      "@typescript-eslint/no-explicit-any": "error",
+      "@typescript-eslint/consistent-type-imports": [
+        "error",
+        { prefer: "type-imports", fixStyle: "inline-type-imports" },
+      ],
+    },
+  },
+  {
+    // The logger is the single sanctioned boundary to the console.
+    files: ["src/lib/logger.ts"],
+    rules: {
+      "no-console": "off",
+    },
+  },
+  {
+    // Tests assert on real behaviour and are allowed slightly longer flows.
+    files: ["src/**/__tests__/**/*.{ts,tsx}", "src/**/*.test.{ts,tsx}"],
+    rules: {
+      complexity: "off",
+      "max-depth": "off",
+      "no-console": "off",
+    },
+  },
 ]);
 
 export default eslintConfig;
