@@ -32,13 +32,6 @@ const eslintConfig = defineConfig([
     },
   },
   {
-    // The logger is the single sanctioned boundary to the console.
-    files: ["src/lib/logger.ts"],
-    rules: {
-      "no-console": "off",
-    },
-  },
-  {
     // Tests assert on real behaviour and are allowed slightly longer flows.
     files: ["src/**/__tests__/**/*.{ts,tsx}", "src/**/*.test.{ts,tsx}"],
     rules: {
