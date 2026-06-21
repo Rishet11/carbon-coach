@@ -105,7 +105,7 @@ export function CarbonCoachApp() {
               Lifestyle profile
             </h2>
             <p className="mt-2 text-sm leading-6 text-slate-600">
-              Enter rough monthly and weekly habits. The estimate updates through the validated analysis route.
+              Enter rough monthly and weekly habits. The estimate updates locally after each submission.
             </p>
             <div className="mt-6">
               <ProfileForm

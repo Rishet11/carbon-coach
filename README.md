@@ -26,7 +26,6 @@ The recommendation engine is intentionally contextual. For example, it does not 
 
 ```text
 Profile form
-  -> POST /api/analyze
   -> zod validation
   -> pure TypeScript domain engine
   -> footprint, benchmarks, insight, recommendations
@@ -50,6 +49,7 @@ No database is used. Adopted actions are stored in `localStorage` in the current
 - [Our World in Data: food choices and carbon footprint](https://ourworldindata.org/food-choice-vs-eating-local)
 - [Oxfam: Carbon inequality in 2030](https://www.oxfam.org/en/research/carbon-inequality-2030)
 - Country grid-intensity assumptions are rounded from IEA/Ember-style public electricity data.
+- The deployed site is published from GitHub Pages at `https://rishet11.github.io/carbon-coach/`.
 
 ## Run locally
 
