@@ -49,6 +49,21 @@ describe("ProfileForm", () => {
     const results = await axe(container);
     expect(results.violations).toHaveLength(0);
   });
+
+  it("has no axe violations while showing field errors", async () => {
+    const { container } = render(
+      <ProfileForm
+        profile={DEFAULT_PROFILE}
+        errors={{ householdSize: "Household size must be at least 1." }}
+        isSubmitting={false}
+        onProfileChange={vi.fn()}
+        onSubmit={vi.fn()}
+      />,
+    );
+
+    const results = await axe(container);
+    expect(results.violations).toHaveLength(0);
+  });
 });
 
 describe("results components", () => {
@@ -120,5 +135,21 @@ describe("CarbonCoachApp", () => {
 
     expect(screen.getByText("Plan updated locally.")).toBeInTheDocument();
     expect(screen.getByText(analyzeProfile(DEFAULT_PROFILE).insight)).toBeInTheDocument();
+  });
+
+  it("blocks submission and shows field errors for invalid input", async () => {
+    const user = userEvent.setup();
+
+    render(<CarbonCoachApp />);
+    const household = screen.getByLabelText("Household size");
+    await user.clear(household);
+    await user.type(household, "0");
+    await user.click(screen.getByRole("button", { name: "Update carbon plan" }));
+
+    expect(screen.getByRole("alert")).toBeInTheDocument();
+    expect(
+      screen.getByText("Please fix the highlighted fields before calculating."),
+    ).toBeInTheDocument();
+    expect(screen.queryByText("Plan updated locally.")).not.toBeInTheDocument();
   });
 });

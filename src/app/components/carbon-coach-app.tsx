@@ -8,6 +8,7 @@ import { ResultsDashboard } from "@/app/components/results-dashboard";
 import { TrackerPanel } from "@/app/components/tracker-panel";
 import { analyzeProfile } from "@/domain/coach";
 import { DEFAULT_PROFILE } from "@/domain/sample-profiles";
+import { fieldErrorsFromZod, lifestyleProfileSchema } from "@/lib/schema";
 import type { Analysis, LifestyleProfile } from "@/domain/types";
 
 const STORAGE_KEY = "carboncoach.adopted-actions.v1";
@@ -60,11 +61,18 @@ export function CarbonCoachApp() {
 
   function submitProfile(): void {
     setIsSubmitting(true);
-    setFieldErrors({});
     setStatusMessage("");
 
-    const nextAnalysis = analyzeProfile(profile);
-    applyAnalysis(nextAnalysis);
+    const parsed = lifestyleProfileSchema.safeParse(profile);
+    if (!parsed.success) {
+      setFieldErrors(fieldErrorsFromZod(parsed.error));
+      setStatusMessage("Please fix the highlighted fields before calculating.");
+      setIsSubmitting(false);
+      return;
+    }
+
+    setFieldErrors({});
+    applyAnalysis(analyzeProfile(profile));
     setStatusMessage("Plan updated locally.");
     setIsSubmitting(false);
   }

@@ -221,6 +221,7 @@ export function ProfileForm({
 
   return (
     <form
+      noValidate
       className="space-y-6"
       aria-label="Carbon footprint profile"
       onSubmit={(event) => {
