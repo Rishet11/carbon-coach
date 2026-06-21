@@ -152,4 +152,23 @@ describe("CarbonCoachApp", () => {
     ).toBeInTheDocument();
     expect(screen.queryByText("Plan updated locally.")).not.toBeInTheDocument();
   });
+
+  it("loads adopted actions from storage and persists toggles", async () => {
+    const user = userEvent.setup();
+    const firstId = analyzeProfile(DEFAULT_PROFILE).recommendations[0]?.id;
+    if (!firstId) throw new Error("Expected at least one recommendation");
+
+    window.localStorage.setItem("carboncoach.adopted-actions.v1", JSON.stringify([firstId]));
+    render(<CarbonCoachApp />);
+
+    const adoptedButton = await screen.findByRole("button", { name: "Adopted" });
+    expect(adoptedButton).toBeInTheDocument();
+
+    await user.click(adoptedButton);
+
+    const stored: unknown = JSON.parse(
+      window.localStorage.getItem("carboncoach.adopted-actions.v1") ?? "[]",
+    );
+    expect(Array.isArray(stored) && stored.includes(firstId)).toBe(false);
+  });
 });

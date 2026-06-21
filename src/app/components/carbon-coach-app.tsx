@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Methodology } from "@/app/components/methodology";
 import { ProfileForm } from "@/app/components/profile-form";
 import { RecommendationList } from "@/app/components/recommendation-list";
@@ -34,11 +34,12 @@ export function CarbonCoachApp() {
   const [statusMessage, setStatusMessage] = useState("");
   const [adoptedIds, setAdoptedIds] = useState<readonly string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const hasHydrated = useRef(false);
 
   useEffect(() => {
-    let mounted = true;
-    window.queueMicrotask(() => {
-      if (!mounted) return;
+    let active = true;
+    queueMicrotask(() => {
+      if (!active) return;
       try {
         setAdoptedIds(parseStoredIds(window.localStorage.getItem(STORAGE_KEY)));
       } catch {
@@ -46,11 +47,17 @@ export function CarbonCoachApp() {
       }
     });
     return () => {
-      mounted = false;
+      active = false;
     };
   }, []);
 
   useEffect(() => {
+    // Skip the first run so the stored value is loaded before it is written
+    // back; otherwise mount would overwrite the saved actions with an empty list.
+    if (!hasHydrated.current) {
+      hasHydrated.current = true;
+      return;
+    }
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(adoptedIds));
   }, [adoptedIds]);
 
