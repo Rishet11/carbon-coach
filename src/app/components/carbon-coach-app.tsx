@@ -14,22 +14,10 @@ const STORAGE_KEY = "carboncoach.adopted-actions.v1";
 
 type FieldErrors = Readonly<Record<string, string>>;
 
-interface ApiErrorPayload {
-  readonly error?: {
-    readonly fields?: FieldErrors;
-    readonly message?: string;
-  };
-}
-
 function parseStoredIds(value: string | null): readonly string[] {
   if (!value) return [];
   const parsed: unknown = JSON.parse(value);
   return Array.isArray(parsed) ? parsed.filter((item): item is string => typeof item === "string") : [];
-}
-
-function apiErrorFromUnknown(payload: unknown): ApiErrorPayload {
-  if (!payload || typeof payload !== "object") return {};
-  return payload as ApiErrorPayload;
 }
 
 function filterCurrentAdopted(ids: readonly string[], analysis: Analysis): readonly string[] {
@@ -70,34 +58,15 @@ export function CarbonCoachApp() {
     setAdoptedIds((current) => filterCurrentAdopted(current, nextAnalysis));
   }
 
-  async function submitProfile(): Promise<void> {
+  function submitProfile(): void {
     setIsSubmitting(true);
     setFieldErrors({});
     setStatusMessage("");
 
-    try {
-      const response = await fetch("/api/analyze", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(profile),
-      });
-      const payload: unknown = await response.json();
-
-      if (!response.ok) {
-        const apiError = apiErrorFromUnknown(payload);
-        setFieldErrors(apiError.error?.fields ?? {});
-        setStatusMessage(apiError.error?.message ?? "Unable to analyse this profile.");
-        return;
-      }
-
-      applyAnalysis(payload as Analysis);
-      setStatusMessage("Plan updated from the validated API.");
-    } catch {
-      applyAnalysis(analyzeProfile(profile));
-      setStatusMessage("Plan updated locally because the API was unavailable.");
-    } finally {
-      setIsSubmitting(false);
-    }
+    const nextAnalysis = analyzeProfile(profile);
+    applyAnalysis(nextAnalysis);
+    setStatusMessage("Plan updated locally.");
+    setIsSubmitting(false);
   }
 
   function toggleAdopted(id: string): void {

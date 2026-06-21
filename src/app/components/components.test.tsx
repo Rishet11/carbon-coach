@@ -112,18 +112,13 @@ describe("results components", () => {
 });
 
 describe("CarbonCoachApp", () => {
-  it("submits through the API and updates status", async () => {
+  it("submits locally and updates status", async () => {
     const user = userEvent.setup();
-    const apiAnalysis = analyzeProfile(HIGH_CARBON_PROFILE);
-    const fetchMock = vi.fn(async () => new Response(JSON.stringify(apiAnalysis), { status: 200 }));
-    vi.stubGlobal("fetch", fetchMock);
 
     render(<CarbonCoachApp />);
     await user.click(screen.getByRole("button", { name: "Update carbon plan" }));
 
-    expect(fetchMock).toHaveBeenCalledOnce();
-    expect(await screen.findByText("Plan updated from the validated API.")).toBeInTheDocument();
-
-    vi.unstubAllGlobals();
+    expect(screen.getByText("Plan updated locally.")).toBeInTheDocument();
+    expect(screen.getByText(analyzeProfile(DEFAULT_PROFILE).insight)).toBeInTheDocument();
   });
 });
