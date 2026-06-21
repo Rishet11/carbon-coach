@@ -2,7 +2,7 @@
 
 ![CI](https://github.com/Rishet11/carbon-coach/actions/workflows/ci.yml/badge.svg)
 
-CarbonCoach is a personal carbon-footprint awareness platform for Prompt Wars Challenge 3. It helps individuals estimate, understand, track, and reduce their annual footprint through contextual recommendations.
+CarbonCoach is a personal carbon-footprint awareness platform. It helps individuals estimate, understand, track, and reduce their annual footprint through contextual recommendations.
 
 **Live app:** https://rishet11.github.io/carbon-coach/
 
