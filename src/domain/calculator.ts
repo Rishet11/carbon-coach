@@ -12,6 +12,7 @@ import {
   SHORT_HAUL_RETURN_KG,
   DIET_KG_PER_YEAR,
 } from "@/domain/emission-factors";
+import { round2, roundKg } from "@/lib/num";
 import type {
   CarType,
   CategoryBreakdown,
@@ -20,22 +21,14 @@ import type {
   TransportProfile,
 } from "@/domain/types";
 
-function roundKg(value: number): number {
-  return Math.max(0, Math.round(value));
-}
-
-function roundTonnes(value: number): number {
-  return Math.round((value / KG_PER_TONNE) * 100) / 100;
-}
-
-function electricityKg(profile: LifestyleProfile): number {
+export function electricityKg(profile: LifestyleProfile): number {
   const annualKwh = profile.home.electricityKwhPerMonth * MONTHS_PER_YEAR;
   const gridFactor = GRID_INTENSITY_KG_PER_KWH[profile.country];
   const gridShare = 1 - profile.home.renewableShare;
   return (annualKwh * gridFactor * gridShare) / profile.householdSize;
 }
 
-function heatingKg(profile: LifestyleProfile): number {
+export function heatingKg(profile: LifestyleProfile): number {
   const annualKwh = profile.home.heatingFuelKwhPerMonth * MONTHS_PER_YEAR;
   const householdShare = annualKwh / profile.householdSize;
 
@@ -88,6 +81,6 @@ export function calculateFootprint(profile: LifestyleProfile): Footprint {
   return {
     categories,
     totalKg,
-    totalTonnes: roundTonnes(totalKg),
+    totalTonnes: round2(totalKg / KG_PER_TONNE),
   };
 }

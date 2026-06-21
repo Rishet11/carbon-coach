@@ -1,16 +1,13 @@
 import { MAX_RECOMMENDATIONS, MIN_RECOMMENDATION_SAVING_KG, WEEKS_PER_YEAR } from "@/constants";
-import { carKgPerKm } from "@/domain/calculator";
+import { carKgPerKm, electricityKg, heatingKg } from "@/domain/calculator";
 import {
   DIET_KG_PER_YEAR,
   DIET_LADDER,
-  EV_KWH_PER_KM,
   GOODS_KG_PER_YEAR,
-  GRID_INTENSITY_KG_PER_KWH,
-  HEATING_OIL_KG_PER_KWH,
   LONG_HAUL_RETURN_KG,
-  NATURAL_GAS_KG_PER_KWH,
   SHORT_HAUL_RETURN_KG,
 } from "@/domain/emission-factors";
+import { roundKg } from "@/lib/num";
 import type {
   CostImpact,
   DietType,
@@ -34,31 +31,13 @@ const COST_WEIGHT: Readonly<Record<CostImpact, number>> = {
   "upfront-cost": 0.78,
 };
 
-function roundKg(value: number): number {
-  return Math.max(0, Math.round(value));
-}
-
-function annualElectricityKg(profile: LifestyleProfile): number {
-  const gridShare = 1 - profile.home.renewableShare;
-  const annualKwh = profile.home.electricityKwhPerMonth * 12;
-  return (annualKwh * GRID_INTENSITY_KG_PER_KWH[profile.country] * gridShare) / profile.householdSize;
-}
-
-function annualHeatingKg(profile: LifestyleProfile): number {
-  const annualKwhPerPerson = (profile.home.heatingFuelKwhPerMonth * 12) / profile.householdSize;
-
-  if (profile.home.heating === "gas") return annualKwhPerPerson * NATURAL_GAS_KG_PER_KWH;
-  if (profile.home.heating === "oil") return annualKwhPerPerson * HEATING_OIL_KG_PER_KWH;
-  return 0;
-}
-
 function currentCarKg(profile: LifestyleProfile): number {
   return profile.transport.carKmPerWeek * WEEKS_PER_YEAR * carKgPerKm(profile.transport.carType, profile);
 }
 
 function evCarKg(profile: LifestyleProfile): number {
   const annualKm = profile.transport.carKmPerWeek * WEEKS_PER_YEAR;
-  return annualKm * EV_KWH_PER_KM * GRID_INTENSITY_KG_PER_KWH[profile.country];
+  return annualKm * carKgPerKm("electric", profile);
 }
 
 function hasCombustionCar(profile: LifestyleProfile): boolean {
@@ -113,7 +92,7 @@ function withPriority(draft: RecommendationDraft, profile: LifestyleProfile): Re
 }
 
 function renewableTariff(profile: LifestyleProfile): RecommendationDraft | null {
-  const savingKgPerYear = roundKg(annualElectricityKg(profile) * 0.9);
+  const savingKgPerYear = roundKg(electricityKg(profile) * 0.9);
   if (profile.home.renewableShare >= 0.9 || savingKgPerYear < MIN_RECOMMENDATION_SAVING_KG) return null;
 
   return {
@@ -123,7 +102,7 @@ function renewableTariff(profile: LifestyleProfile): RecommendationDraft | null 
     savingKgPerYear,
     effort: "easy",
     costImpact: profile.context.budgetSensitivity === "strict" ? "neutral" : "upfront-cost",
-    rationale: `Your current electricity mix still leaves about ${roundKg(annualElectricityKg(profile))} kg CO2e a year on the grid side.`,
+    rationale: `Your current electricity mix still leaves about ${roundKg(electricityKg(profile))} kg CO2e a year on the grid side.`,
     whyThisMatters: "It is one of the fastest home-energy changes because it does not require renovation.",
     actionSteps: ["Check your current tariff mix", "Compare renewable electricity plans", "Switch only if the price still fits your budget"],
     feasibility: 0.88,
@@ -131,7 +110,7 @@ function renewableTariff(profile: LifestyleProfile): RecommendationDraft | null 
 }
 
 function electricityTrim(profile: LifestyleProfile): RecommendationDraft | null {
-  const savingKgPerYear = roundKg(annualElectricityKg(profile) * 0.15);
+  const savingKgPerYear = roundKg(electricityKg(profile) * 0.15);
   if (profile.home.electricityKwhPerMonth < 150 || savingKgPerYear < MIN_RECOMMENDATION_SAVING_KG) return null;
 
   return {
@@ -149,18 +128,18 @@ function electricityTrim(profile: LifestyleProfile): RecommendationDraft | null 
 }
 
 function heatingUpgrade(profile: LifestyleProfile): RecommendationDraft | null {
-  const heatingKg = annualHeatingKg(profile);
-  if (heatingKg < 120) return null;
+  const heating = heatingKg(profile);
+  if (heating < 120) return null;
 
   if (profile.context.homeControl === "own") {
     return {
       id: "heat-pump-or-insulation",
       title: "Plan a heating efficiency upgrade",
       category: "homeEnergy",
-      savingKgPerYear: roundKg(heatingKg * 0.45),
+      savingKgPerYear: roundKg(heating * 0.45),
       effort: "significant",
       costImpact: "upfront-cost",
-      rationale: `${profile.home.heating} heating contributes about ${roundKg(heatingKg)} kg CO2e per year for your share of the home.`,
+      rationale: `${profile.home.heating} heating contributes about ${roundKg(heating)} kg CO2e per year for your share of the home.`,
       whyThisMatters: "Owned homes can unlock larger cuts through insulation, heat pumps, or equipment replacement.",
       actionSteps: ["Book a home energy audit", "Prioritize insulation leaks first", "Compare heat-pump incentives before replacing equipment"],
       feasibility: 0.64,
@@ -171,7 +150,7 @@ function heatingUpgrade(profile: LifestyleProfile): RecommendationDraft | null {
     id: "renter-heating-controls",
     title: "Use renter-friendly heating controls",
     category: "homeEnergy",
-    savingKgPerYear: roundKg(heatingKg * 0.12),
+    savingKgPerYear: roundKg(heating * 0.12),
     effort: "easy",
     costImpact: "saves-money",
     rationale: `As a renter, smaller control changes fit your situation better than major retrofit advice.`,

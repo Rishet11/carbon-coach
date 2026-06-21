@@ -4,6 +4,7 @@ import {
   GLOBAL_AVERAGE_TONNES,
   PARIS_ALIGNED_TONNES_2030,
 } from "@/constants";
+import { round2 } from "@/lib/num";
 import type { Benchmark, BenchmarkVerdict, CountryCode, Footprint } from "@/domain/types";
 
 function verdict(totalTonnes: number, averageTonnes: number): BenchmarkVerdict {
@@ -16,10 +17,6 @@ function verdict(totalTonnes: number, averageTonnes: number): BenchmarkVerdict {
   return "well-above";
 }
 
-function roundTonnes(value: number): number {
-  return Math.round(value * 100) / 100;
-}
-
 export function benchmarkFootprint(footprint: Footprint, country: CountryCode): Benchmark {
   const countryAverageTonnes = COUNTRY_AVERAGE_TONNES[country];
 
@@ -29,6 +26,6 @@ export function benchmarkFootprint(footprint: Footprint, country: CountryCode): 
     globalAverageTonnes: GLOBAL_AVERAGE_TONNES,
     parisTargetTonnes: PARIS_ALIGNED_TONNES_2030,
     verdictVsCountry: verdict(footprint.totalTonnes, countryAverageTonnes),
-    gapToParisTonnes: roundTonnes(footprint.totalTonnes - PARIS_ALIGNED_TONNES_2030),
+    gapToParisTonnes: round2(footprint.totalTonnes - PARIS_ALIGNED_TONNES_2030),
   };
 }

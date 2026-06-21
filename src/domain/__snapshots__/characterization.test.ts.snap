@@ -1,0 +1,141 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`domain engine characterization > is stable for the default profile 1`] = `
+{
+  "benchmark": {
+    "countryAverageTonnes": 2.2,
+    "countryLabel": "India",
+    "gapToParisTonnes": 5.92,
+    "globalAverageTonnes": 4.7,
+    "parisTargetTonnes": 2.3,
+    "verdictVsCountry": "well-above",
+  },
+  "categories": {
+    "flights": 2720,
+    "food": 2500,
+    "goods": 1425,
+    "homeEnergy": 628,
+    "transport": 949,
+  },
+  "insight": "Flights are your biggest lever: 3 return trip(s) create 33% of this footprint.",
+  "potentialSavingKgPerYear": 3750,
+  "projectedTotalKg": 4472,
+  "recommendations": [
+    {
+      "id": "reduce-long-flight",
+      "priorityScore": 1027,
+      "savingKgPerYear": 1800,
+    },
+    {
+      "id": "diet-step-down",
+      "priorityScore": 528,
+      "savingKgPerYear": 500,
+    },
+    {
+      "id": "renewable-tariff",
+      "priorityScore": 348,
+      "savingKgPerYear": 565,
+    },
+    {
+      "id": "swap-short-flight",
+      "priorityScore": 338,
+      "savingKgPerYear": 460,
+    },
+    {
+      "id": "shopping-reset",
+      "priorityScore": 223,
+      "savingKgPerYear": 257,
+    },
+    {
+      "id": "drive-less",
+      "priorityScore": 150,
+      "savingKgPerYear": 168,
+    },
+  ],
+  "totalKg": 8222,
+  "totalTonnes": 8.22,
+}
+`;
+
+exports[`domain engine characterization > is stable for the high-carbon profile 1`] = `
+{
+  "benchmark": {
+    "countryAverageTonnes": 14.9,
+    "countryLabel": "United States",
+    "gapToParisTonnes": 19.09,
+    "globalAverageTonnes": 4.7,
+    "parisTargetTonnes": 2.3,
+    "verdictVsCountry": "well-above",
+  },
+  "categories": {
+    "flights": 7240,
+    "food": 3300,
+    "goods": 3000,
+    "homeEnergy": 4783,
+    "transport": 3070,
+  },
+  "insight": "Flights are your biggest lever: 7 return trip(s) create 34% of this footprint.",
+  "potentialSavingKgPerYear": 9017,
+  "projectedTotalKg": 12376,
+  "recommendations": [
+    {
+      "id": "renewable-tariff",
+      "priorityScore": 3324,
+      "savingKgPerYear": 3277,
+    },
+    {
+      "id": "reduce-long-flight",
+      "priorityScore": 1171,
+      "savingKgPerYear": 1800,
+    },
+    {
+      "id": "switch-to-ev",
+      "priorityScore": 922,
+      "savingKgPerYear": 1754,
+    },
+    {
+      "id": "diet-step-down",
+      "priorityScore": 676,
+      "savingKgPerYear": 800,
+    },
+    {
+      "id": "shopping-reset",
+      "priorityScore": 640,
+      "savingKgPerYear": 840,
+    },
+    {
+      "id": "electricity-trim",
+      "priorityScore": 575,
+      "savingKgPerYear": 546,
+    },
+  ],
+  "totalKg": 21393,
+  "totalTonnes": 21.39,
+}
+`;
+
+exports[`domain engine characterization > is stable for the low-carbon profile 1`] = `
+{
+  "benchmark": {
+    "countryAverageTonnes": 6.5,
+    "countryLabel": "France",
+    "gapToParisTonnes": -0.28,
+    "globalAverageTonnes": 4.7,
+    "parisTargetTonnes": 2.3,
+    "verdictVsCountry": "well-below",
+  },
+  "categories": {
+    "flights": 0,
+    "food": 1100,
+    "goods": 665,
+    "homeEnergy": 4,
+    "transport": 250,
+  },
+  "insight": "Food & diet leads your profile at 1.1 t per year, about 54% of the total.",
+  "potentialSavingKgPerYear": 0,
+  "projectedTotalKg": 2019,
+  "recommendations": [],
+  "totalKg": 2019,
+  "totalTonnes": 2.02,
+}
+`;
